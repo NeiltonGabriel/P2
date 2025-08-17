@@ -1,0 +1,16 @@
+package atividade2;
+
+public class Juridica extends Pessoa{
+    private int qtd_fum;
+
+    public Juridica(String nome, double renda, int qtd){
+        super(nome, renda);
+        this.qtd_fum = qtd;
+    }
+
+    @Override
+    public double calcularImposto(){
+        if (this.qtd_fum > 10) return this.getRenda() * 0.14;
+        else return this.getRenda() * 0.16;
+    }
+}
