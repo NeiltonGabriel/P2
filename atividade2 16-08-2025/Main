@@ -1,0 +1,64 @@
+package atividade2;
+
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class Main{
+    public static void main(String[] args) {
+        Scanner tec = new Scanner(System.in);
+
+        ArrayList <Pessoa> contribuintes = new ArrayList<>();
+
+        System.out.print("Digite a quantidade de contribuintes: ");
+        int N = tec.nextInt();
+        tec.nextLine(); //ler o '\n'
+
+        for (int i = 1; i <= N; i++){
+
+            System.out.println("Digite os dados do contribuinte #" + i + ":");
+            System.out.print("Pessoa física (f) ou jurídica(j)? ");
+            char c = tec.nextLine().charAt(0);
+
+            while(c != 'f' && c != 'j'){
+                System.out.println("Isso não pode. Digite 'f' para pessoa física ou 'j' para pessoa jurídica: ");
+                c = tec.nextLine().charAt(0);
+            }
+
+            System.out.print("Nome: ");
+            String nome = tec.nextLine();
+            System.out.print("Renda: ");
+            double renda = tec.nextDouble();
+            tec.nextLine(); //ler o '\n'
+
+            if (c == 'f'){
+                System.out.print("Despesas com saúde: ");
+                double gastos = tec.nextDouble();
+                tec.nextLine();
+                Fisica f = new Fisica(nome, renda, gastos);
+                contribuintes.add(f);
+            }
+            else{
+                System.out.print("Quantidade de funcionários: ");
+                int qtd = tec.nextInt();
+                tec.nextLine();
+                Juridica j = new Juridica(nome, renda, qtd);
+                contribuintes.add(j);
+            }
+        }
+
+        tec.close();
+
+        impostoTotal(contribuintes);
+    }
+
+    public static void impostoTotal(ArrayList<Pessoa> contribuintes){
+        double s = 0;
+        System.out.println("\nImposto pago:");
+        for (Pessoa p : contribuintes){
+            double atual = p.calcularImposto();
+            System.out.printf("%s: $ %.2f\n", p.getNome(), atual);
+            s += atual;
+        }
+        System.out.println("\nImposto total: " + s);
+    }
+}
