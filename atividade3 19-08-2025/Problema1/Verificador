@@ -1,0 +1,19 @@
+package atividade3;
+
+import java.time.LocalDate;
+import java.util.InputMismatchException;
+
+public class Verificador {
+
+    public static void datas(LocalDate primeira, LocalDate segunda) throws IllegalArgumentException{
+        if (!primeira.isBefore(segunda)) {
+            throw new IllegalArgumentException("Intervalo de datas invalido");
+        }
+    }
+
+    public static void entrada(String[] input) throws InputMismatchException{
+        if (input.length != 3) {
+            throw new InputMismatchException("A data tem que ter ano, mes, dia");
+        }
+    }
+}
