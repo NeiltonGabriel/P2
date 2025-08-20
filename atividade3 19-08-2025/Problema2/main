@@ -1,0 +1,127 @@
+package atividade3;
+
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
+public class ProblemaDois {
+    public static void main(String[] args){
+        Scanner tec = new Scanner(System.in);
+
+        int numero;
+        String dono;
+        double saldo, saque_limite;
+        ContaBancaria pagante;
+
+        System.out.println("Digite os dados da conta");
+        System.out.print("Digite o numero da conta: ");
+
+        try{
+            numero = tec.nextInt();
+            tec.nextLine(); //tirar o '\n'
+            while(numero <= 0){
+                System.out.println("O numero tem que ser maior que 0");
+                numero = tec.nextInt();
+                tec.nextLine();
+            }
+
+        }catch (InputMismatchException e){
+            System.out.println("Numero da conta deve ser um numero natural");
+            System.out.println("Faca do comeco para aprender a nao errar");
+            return;
+        }
+
+        System.out.print("Digite o nome do dono da conta: ");
+        dono = tec.nextLine();
+        //Se o usuario digitar qualquer coisa, vai ser esse o nome
+        //exceto se tiver vazia ou em branco
+        while(dono.isBlank() || (dono.length() < 5)){
+            System.out.println("O nome deve conter pelo menos 5 letras");
+            System.out.print("Tente de novo: ");
+            dono = tec.nextLine();
+        }
+
+        try{
+            System.out.println("Digite o saldo inicial e o limite de saque da conta");
+            System.out.print("Saldo inicial: ");
+            saldo = tec.nextDouble();
+            tec.nextLine();
+
+            while(saldo < 0){
+                System.out.println("Nao e possivel criar uma conta com saldo negativo");
+                System.out.print("Tente de novo: ");
+                saldo = tec.nextDouble();
+                tec.nextLine();
+            }
+
+            System.out.print("Limite de saque: ");
+            saque_limite = tec.nextDouble();
+            tec.nextLine();
+
+            while(saque_limite <= 0){
+                System.out.println("O limite de saque deve ser no minimo 1 real");
+                System.out.print("Tente novamente: ");
+                saque_limite = tec.nextDouble();
+                tec.nextLine();
+            }
+            pagante = new ContaBancaria(numero, dono, saldo, saque_limite);
+            System.out.println(pagante.toString());
+
+        }catch (InputMismatchException e){
+            System.out.println("Tanto o saldo quanto o limite de saque devem ser" +
+                    " numeros reais maiores que 0");
+            System.out.println("Faca do comeco para aprender a nao errar");
+            return;
+        }
+
+        System.out.print("Deseja realizar um deposito ou saque?\n" + "Ou deseja sair? ");
+        String acao = tec.nextLine();
+
+        if (acao.equals("deposito")){
+            System.out.print("Digite o valor a ser depositado: ");
+
+            try{
+                saldo = tec.nextDouble();
+                tec.nextLine();
+
+                try{
+                    pagante.depositar(saldo);
+                }catch (ArithmeticException a){
+                    System.out.println(a.getMessage());
+                    return;
+                }
+
+                System.out.println("Novo saldo: " + pagante.getSaldo());
+
+            }catch (InputMismatchException _){
+                System.out.println("O valor do deposito deve ser um numero real");
+                System.out.println("Faca do comeco para aprender a nao errar");
+                return;
+            }
+
+        }else if(acao.equals("saque")){
+            System.out.print("Digite o valor a ser sacado: ");
+
+            try{
+                saldo = tec.nextDouble();
+                tec.nextLine();
+
+                try{
+                    pagante.sacar(saldo);
+                }
+                catch (ArithmeticException a){
+                    System.out.println(a.getMessage());
+                    return;
+                }
+
+                System.out.println("Novo saldo: " + pagante.getSaldo());
+
+            }catch (InputMismatchException _){
+                System.out.println("O valor do saque deve ser um numero real");
+                System.out.println("Faca do come├ºo para aprender a nao errar");
+                return;
+            }
+        }
+
+        tec.close();
+    }
+}
