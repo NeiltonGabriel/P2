@@ -1,0 +1,76 @@
+package atividade3;
+
+public class ContaBancaria {
+    private int numero;
+    private String dono;
+    private double saldo;
+    private double saque_limite;
+
+    public ContaBancaria(int numero, String dono, double saldo, double saque_limite){
+        this.setNumero(numero);
+        this.setDono(dono);
+        this.setSaldo(saldo);
+        this.setSaque_limite(saque_limite);
+    }
+
+    @Override
+    public String toString() {
+        return "ContaBancaria:" +
+                "\nnumero= " + numero +
+                "\ndono= " + dono +
+                "\nsaldo= R$ " + saldo +
+                "\nsaque_limite= R$ " + saque_limite;
+    }
+
+    public void depositar(double deposito) throws ArithmeticException{
+        if (deposito >= 0) this.setSaldo(this.getSaldo() + deposito);
+        else throw new ArithmeticException("Nao e possivel depositar valores negativos");
+    }
+
+    public void sacar(double qtd) throws ArithmeticException{
+        if (qtd > this.getSaque_limite()){
+            throw new ArithmeticException("Nao e possivel realizar esse saque pois a" +
+                    "quantidade a ser sacada e maior do que o limite de saque da conta");
+        }
+        else if (qtd > this.getSaldo()){
+            throw new ArithmeticException("Nao e possivel realizar o saque, pois a " +
+                    "quantidade a ser sacada e maior do que o saldo da conta");
+        }
+        else if (qtd < 0){
+            throw new ArithmeticException("Nao e possivel sacar valores negativos");
+        }
+        else this.setSaldo(this.getSaldo() - qtd);
+    }
+
+    public int getNumero() {
+        return numero;
+    }
+
+    public void setNumero(int numero) {
+        this.numero = numero;
+    }
+
+    public String getDono() {
+        return dono;
+    }
+
+    public void setDono(String dono) {
+        this.dono = dono;
+    }
+
+    public double getSaldo() {
+        return saldo;
+    }
+
+    public void setSaldo(double saldo) {
+        this.saldo = saldo;
+    }
+
+    public double getSaque_limite() {
+        return saque_limite;
+    }
+
+    public void setSaque_limite(double saque_limite) {
+        this.saque_limite = saque_limite;
+    }
+}
