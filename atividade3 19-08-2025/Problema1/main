@@ -1,0 +1,92 @@
+package atividade3;
+
+import java.time.DateTimeException;
+import java.time.LocalDate;
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
+public class ProblemaUm{
+    public static void main(String[] args){
+        Scanner tec = new Scanner(System.in);
+        int quarto;
+        System.out.print("Digite o numero do quarto a ser reservado: ");
+
+        try{
+            quarto = tec.nextInt();
+        }
+        catch(InputMismatchException e){
+            System.out.println("Digite um numero natural para o numero do quarto");
+            return;
+        }
+        tec.nextLine(); //tirar o '\n'
+
+        try {
+            System.out.print("Digite a data de checkin (yyyy/mm/dd): ");
+            String[] inicio = tec.nextLine().split("/");
+            Verificador.entrada(inicio);
+            System.out.print("Digite a data de checkout (yyyy/mm/dd): ");
+            String[] fim = tec.nextLine().split("/");
+            LocalDate checkin, checkout;
+            try{
+                checkin = LocalDate.of(Integer.parseInt(inicio[0]), Integer.parseInt(inicio[1]), Integer.parseInt(inicio[2]));
+                checkout = LocalDate.of(Integer.parseInt(fim[0]), Integer.parseInt(fim[1]), Integer.parseInt(fim[2]));
+            }
+            catch(DateTimeException e) {
+                System.out.println("Data invalida, faca do comeco");
+                return;
+            }
+            //colocar essa parte da reserva em outro try catch, para nao mostrar o erro no prompt
+
+                Reserva reserva;
+            try{
+                reserva = new Reserva(quarto, checkin, checkout);
+            }
+            catch(IllegalArgumentException e){
+                System.out.println("Voce cometeu o seguinte erro: " + e.getMessage());
+                System.out.println("Faca do comeco para aprender a nao errar >:(");
+                return;
+            }
+
+            System.out.println(reserva.dados());
+            System.out.print("Deseja atualizar os dados? (S ou N) ");
+            char atualizar = tec.nextLine().charAt(0);
+
+            while(atualizar != 'S' && atualizar != 'N'){
+                System.out.println("Digite 'S' para sim ou 'N' para nao");
+                atualizar = tec.nextLine().charAt(0);
+            }
+
+            if (atualizar == 'S'){
+                System.out.print("Digite o numero do quarto: ");
+                quarto = tec.nextInt();
+                tec.nextLine();
+                try{
+                    System.out.print("Digite a data de checkin (yyyy/mm/dd): ");
+                    String[] inicio2 = tec.nextLine().split("/");
+                    Verificador.entrada(inicio2);
+                    System.out.print("Digite a data de checkout (yyyy/mm/dd): ");
+                    String[] fim2 = tec.nextLine().split("/");
+                    try{
+                        checkin = LocalDate.of(Integer.parseInt(inicio2[0]), Integer.parseInt(inicio2[1]), Integer.parseInt(inicio2[2]));
+                        checkout = LocalDate.of(Integer.parseInt(fim2[0]), Integer.parseInt(fim2[1]), Integer.parseInt(fim2[2]));
+                    }
+                    catch (DateTimeException e){
+                        System.out.println("Data invalida, faca do comeco");
+                    }
+                    reserva.atualizarDatas(quarto, checkin, checkout);
+                    System.out.println(reserva.dados());
+                }
+                catch (InputMismatchException e){
+                    System.out.println("Data tem que ser na forma (ano/mes/dia)");
+                }
+            }
+
+        }
+        catch(InputMismatchException e){
+            System.out.println("Data tem que ser na forma (ano/mes/dia)");
+        }
+        finally{
+            tec.close();
+        }
+    }
+}
