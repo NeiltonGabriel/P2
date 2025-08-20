@@ -1,0 +1,74 @@
+package atividade3;
+
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+
+public class Reserva {
+    private int num_quarto;
+    private LocalDate checkin;
+    private LocalDate checkout;
+
+    public Reserva(int num_quarto, LocalDate checkin, LocalDate checkout){
+        try{
+            Verificador.datas(checkin, checkout);
+            Verificador.datas(LocalDate.now(), checkin); //Verificar se e depois de hoje
+            this.setCheckin(checkin);
+            this.setCheckout(checkout);
+            this.setNum_quarto(num_quarto);
+        }
+        catch(IllegalArgumentException e) {
+            System.out.println("Voce cometeu o seguinte erro: " + e.getMessage());
+            System.out.println("Agora faca tudo do comeco para aprender a nao errar >:(");
+        }
+    }
+
+    public long duracao(){
+        return ChronoUnit.DAYS.between(this.getCheckin(), this.getCheckout());
+    }
+
+    public void atualizarDatas(int novo_quarto, LocalDate novo_checkin, LocalDate novo_checkout){
+
+        try{
+            Verificador.datas(novo_checkin, novo_checkout); //Vai verificar se as datas sao validas, se nao forem entra no catch
+            Verificador.datas(LocalDate.now(), novo_checkin); //Verificar se e depois de hoje
+            Verificador.datas(this.getCheckin(), novo_checkin);
+            Verificador.datas(this.getCheckout(), novo_checkout);
+            this.setCheckin(novo_checkin);
+            this.setCheckout(novo_checkout);
+            this.setNum_quarto(novo_quarto); //Caso queira trocar de quarto
+        }
+        catch(IllegalArgumentException e){
+            System.out.println("Voce cometeu o seguinte erro: " + e.getMessage());
+            System.out.println("Agora faca tudo do comeco para aprender a nao errar >:(");
+        }
+    }
+
+    public int getNum_quarto() {
+        return this.num_quarto;
+    }
+
+    public void setNum_quarto(int num_quarto) {
+        this.num_quarto = num_quarto;
+    }
+
+    public LocalDate getCheckout() {
+        return this.checkout;
+    }
+
+    public void setCheckout(LocalDate checkout) {
+        this.checkout = checkout;
+    }
+
+    public LocalDate getCheckin() {
+        return this.checkin;
+    }
+
+    public void setCheckin(LocalDate checkin) {
+        this.checkin = checkin;
+    }
+
+    public String dados(){
+        return "Reserva:\nQuarto: " + this.getNum_quarto() + "\nCheck-in: " + this.getCheckin()
+        + "\nCheck-out: " + this.getCheckout() + "\nDuracao: " + this.duracao() + " noites\n";
+    }
+}
