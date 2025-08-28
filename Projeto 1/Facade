@@ -1,0 +1,80 @@
+package br.ufal.ic.p2.wepayu;
+
+import br.ufal.ic.p2.wepayu.Exception.EmpregadoNaoExisteException;
+import br.ufal.ic.p2.wepayu.Exception.TipoSalarioNaoExisteException;
+import br.ufal.ic.p2.wepayu.models.Assalariado;
+import br.ufal.ic.p2.wepayu.models.Comissionado;
+import br.ufal.ic.p2.wepayu.models.Empregado;
+import br.ufal.ic.p2.wepayu.models.Horista;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Facade {
+
+    private List<Empregado> trabalhadores = new ArrayList<>();
+
+    public void zerarSistema(){
+        if (!trabalhadores.isEmpty()){
+            trabalhadores.clear();
+        }
+    }
+
+    public int criarEmpregado(String nome, String endereco, String tipo, double salario){
+
+        int id = (!trabalhadores.isEmpty()) ? trabalhadores.size(): 0;
+
+        try{
+            if (tipo.equals("horista")){
+                Horista novo = new Horista(nome, endereco, tipo, salario, id);
+                trabalhadores.add(novo);
+            }
+            else if (tipo.equals("assalariado")){
+                Assalariado novo = new Assalariado(nome, endereco, tipo, salario, id);
+                trabalhadores.add(novo);
+            }
+            else if (tipo.equals("comissionado")){
+                Comissionado novo = new Comissionado(nome, endereco, tipo, salario, id);
+                trabalhadores.add(novo);
+            }
+            else throw new TipoSalarioNaoExisteException("Nao existe salario do tipo: " + tipo);
+
+        }catch(TipoSalarioNaoExisteException e){
+            System.out.println(e.getMessage());
+        }
+        System.out.println("\nid: " + id + "\n");
+        return id;
+    }
+
+    public String getAtributoEmpregado(String empregado, String atributo) throws EmpregadoNaoExisteException{
+
+        int id = 0;
+        Empregado atual = trabalhadores.getFirst();
+
+        try{
+            id = Integer.parseInt(empregado);
+        }catch(NumberFormatException e){
+            throw new EmpregadoNaoExisteException();
+        }
+
+        for (int i = 0; i < trabalhadores.size(); i++){
+            Empregado aux = trabalhadores.get(i);
+            if (aux.getId() == id){
+                atual = aux;
+                break;
+            }
+            else if (i == trabalhadores.size() - 1){
+                throw new EmpregadoNaoExisteException();
+            }
+        }
+
+
+        if (atributo.equals("nome")) return atual.getNome();
+        else if (atributo.equals("endereco")) return atual.getEndereco();
+        else if (atributo.equals("tipo")) return atual.getTipo();
+        else if (atributo.equals("salario")) return String.format("%.2f", atual.getSalario());
+        return "false";
+    }
+}
