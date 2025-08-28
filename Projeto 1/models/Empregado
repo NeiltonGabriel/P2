@@ -1,0 +1,59 @@
+package br.ufal.ic.p2.wepayu.models;
+
+import br.ufal.ic.p2.wepayu.Exception.EmpregadoNaoExisteException;
+
+public class Empregado {
+    private String nome;
+    private String endereco;
+    private String tipo;
+    private double salario;
+    private int id;
+
+    public Empregado(String nome, String endereco, String tipo, double salario, int id){
+        setNome(nome);
+        setEndereco(endereco);
+        setTipo(tipo);
+        setSalario(salario);
+        setId(id);
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public double getSalario() {
+        return salario;
+    }
+
+    public void setSalario(double salario) {
+        this.salario = salario;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public String getEndereco() {
+        return endereco;
+    }
+
+    public void setEndereco(String endereco) {
+        this.endereco = endereco;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+}
