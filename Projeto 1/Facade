@@ -1,7 +1,6 @@
 package br.ufal.ic.p2.wepayu;
 
-import br.ufal.ic.p2.wepayu.Exception.EmpregadoNaoExisteException;
-import br.ufal.ic.p2.wepayu.Exception.TipoSalarioNaoExisteException;
+import br.ufal.ic.p2.wepayu.Exception.*;
 import br.ufal.ic.p2.wepayu.models.Assalariado;
 import br.ufal.ic.p2.wepayu.models.Comissionado;
 import br.ufal.ic.p2.wepayu.models.Empregado;
@@ -22,59 +21,183 @@ public class Facade {
         }
     }
 
-    public int criarEmpregado(String nome, String endereco, String tipo, double salario){
+    public void alterarEmpregado(String nome, String tipo, String valor){
+        //fazer
+    }
 
-        int id = (!trabalhadores.isEmpty()) ? trabalhadores.size(): 0;
+    public void alterarEmpregado(String nome, String tipo, boolean valor){
+        //fazer quando tipo = sindicalizado e valor = false
+        //valor ├® para ser String
+    }
+
+    public void alterarEmpregado(String nome, String tipo, boolean valor, String idSindicato, String taxaSindical){
+        //fazer quando tipo = sindicalizado e valor = true
+        //valor ├® para ser String
+    }
+
+    public void alterarEmpregado(String nome, String tipo, String valor, String banco, String agencia, String contaCorrente){
+        //fazer quando tipo = metodoPagamento e valor = banco
+    }
+
+    public String criarEmpregado(String nome, String endereco, String tipo, String salario) throws NomeNaoPodeSerNulo{
+
+        if (nome.isEmpty()) throw new NomeNaoPodeSerNulo("Nome nao pode ser nulo.");
+        if (endereco.isEmpty()) throw new NomeNaoPodeSerNulo("Endereco nao pode ser nulo.");
+        if (tipo.isEmpty()) throw new NomeNaoPodeSerNulo("Tipo nao pode ser nulo.");
+        if (salario.isEmpty()) throw new NomeNaoPodeSerNulo("Salario nao pode ser nulo.");
+
+        String id = (!trabalhadores.isEmpty()) ? Integer.toString(Integer.parseInt(trabalhadores.getLast().getId()) + 1) : "1";
 
         try{
-            if (tipo.equals("horista")){
-                Horista novo = new Horista(nome, endereco, tipo, salario, id);
-                trabalhadores.add(novo);
-            }
-            else if (tipo.equals("assalariado")){
-                Assalariado novo = new Assalariado(nome, endereco, tipo, salario, id);
-                trabalhadores.add(novo);
-            }
-            else if (tipo.equals("comissionado")){
-                Comissionado novo = new Comissionado(nome, endereco, tipo, salario, id);
-                trabalhadores.add(novo);
-            }
-            else throw new TipoSalarioNaoExisteException("Nao existe salario do tipo: " + tipo);
+            double aux = Double.parseDouble(salario.replace(",", "."));
+            if (aux < 0) throw new NomeNaoPodeSerNulo("Salario deve ser nao-negativo.");
 
-        }catch(TipoSalarioNaoExisteException e){
-            System.out.println(e.getMessage());
+        }catch(NumberFormatException e){
+            throw new NomeNaoPodeSerNulo("Salario deve ser numerico.");
         }
-        System.out.println("\nid: " + id + "\n");
+
+        if (tipo.equals("assalariado")){
+            Assalariado novo = new Assalariado(nome, endereco, tipo, salario, id);
+            trabalhadores.add(novo);
+        }else if (tipo.equals("horista")) {
+            Horista novo = new Horista(nome, endereco, tipo, salario, id);
+            trabalhadores.add(novo);
+        }else if (tipo.equals("comissionado")) throw new TipoNaoAplicavel("Tipo nao aplicavel.");
+        else throw new TipoNaoAplicavel("Tipo invalido.");
+
         return id;
     }
 
-    public String getAtributoEmpregado(String empregado, String atributo) throws EmpregadoNaoExisteException{
+    public String criarEmpregado(String nome, String endereco, String tipo , String salario, String comissao){
 
-        int id = 0;
-        Empregado atual = trabalhadores.getFirst();
+        if (nome.isEmpty()) throw new NomeNaoPodeSerNulo("Nome nao pode ser nulo.");
+        if (endereco.isEmpty()) throw new NomeNaoPodeSerNulo("Endereco nao pode ser nulo.");
+        if (tipo.isEmpty()) throw new NomeNaoPodeSerNulo("Tipo nao pode ser nulo.");
+        if (salario.isEmpty()) throw new NomeNaoPodeSerNulo("Salario nao pode ser nulo.");
+        if (comissao.isEmpty()) throw new NomeNaoPodeSerNulo("Comissao nao pode ser nula.");
 
         try{
-            id = Integer.parseInt(empregado);
+            double aux = Double.parseDouble(salario.replace(",", "."));
+            if (aux < 0) throw new NomeNaoPodeSerNulo("Salario deve ser nao-negativo.");
+
         }catch(NumberFormatException e){
-            throw new EmpregadoNaoExisteException();
+            throw new NomeNaoPodeSerNulo("Salario deve ser numerico.");
         }
 
-        for (int i = 0; i < trabalhadores.size(); i++){
-            Empregado aux = trabalhadores.get(i);
-            if (aux.getId() == id){
+        try{
+            double aux = Double.parseDouble(comissao.replace(",", "."));
+            if (aux < 0) throw new NomeNaoPodeSerNulo("Comissao deve ser nao-negativa.");
+        }catch (NumberFormatException e){
+            throw new NomeNaoPodeSerNulo("Comissao deve ser numerica.");
+        }
+
+        String id = (!trabalhadores.isEmpty()) ? Integer.toString(Integer.parseInt(trabalhadores.getLast().getId()) + 1) : "1";
+
+        if (!tipo.equals("comissionado")) throw new TipoNaoAplicavel("Tipo nao aplicavel.");
+
+        Comissionado novo = new Comissionado(nome, endereco, tipo, salario, id, comissao);
+
+        trabalhadores.add(novo);
+
+        return id;
+    }
+
+    public void encerrarSistema(){
+        //Salvar no arquivo XML
+    }
+
+    public String getAtributoEmpregado(String emp, String atributo) throws EmpregadoNaoExisteException{
+        //refatorar
+        //Salario = String?
+        if (emp.isEmpty()) throw new IdentificacaoDoEmpregadoNaoPodeSerNula("Identificacao do empregado nao pode ser nula.");
+        if (trabalhadores.isEmpty()) throw new EmpregadoNaoExisteException("Empregado nao existe.");
+
+        Empregado atual = trabalhadores.getFirst();
+
+        boolean achou = false;
+
+        for (Empregado aux : trabalhadores){
+            if (emp.equals(aux.getId())){
                 atual = aux;
+                achou = true;
                 break;
             }
-            else if (i == trabalhadores.size() - 1){
-                throw new EmpregadoNaoExisteException();
-            }
         }
 
+        if (!achou) throw new EmpregadoNaoExisteException("Empregado nao existe.");
 
         if (atributo.equals("nome")) return atual.getNome();
         else if (atributo.equals("endereco")) return atual.getEndereco();
         else if (atributo.equals("tipo")) return atual.getTipo();
-        else if (atributo.equals("salario")) return String.format("%.2f", atual.getSalario());
-        return "false";
+        else if (atributo.equals("salario")) return atual.getSalario();
+        else if (atributo.equals("sindicalizado")) return (atual.isSindicalizado()) ? "true" : "false";
+        else if (atributo.equals("comissao")){
+            Comissionado aux = (Comissionado) atual;
+            return aux.getComissao();
+        }
+        else throw new TipoNaoAplicavel("Atributo nao existe.");
+    }
+
+    public String getEmpregadoPorNome(String nome, int indice){
+        /*
+        procurar pelo nome o indice empregado, ou seja,
+        se indice = 2, ent├úo quero o segundo empregado como nome = String nome
+        e retorna o id dele
+        */
+        return "";
+
+    }
+
+    public String getHorasExtrasTrabalhadas(String emp, String dataInicial, String dataFinal){
+        //Ler a documenta├º├úo para fazer
+        return "";
+    }
+
+    public String getHorasTrabalhadas(String emp, String dataInicial, String dataFinal){
+        //Ler a documenta├º├úo fazer
+        return "";
+    }
+
+    public String getTaxasServico(String emp, String dataInicial, String dataFinal){
+        //Ler documentacao para fazer
+        return "";
+    }
+
+    public String getVendasRealizadas(String emp, String dataInicial, String dataFinal){
+        //Ler a documenta├º├úo para fazer
+        return "";
+    }
+
+    public void lancaCartao(int emp, String data, String horas){
+        //emp ├® o id1
+    }
+
+    public void lancataxaServico(String emp, String data, String valor){
+        //n├úo sei o que ├® para fazer
+    }
+
+    public void lancaVenda(String emp, String data, String valor){
+        //n├úo sei o que fazer
+    }
+
+    public void removerEmpregado(String emp){
+        //demitido
+    }
+
+    public void redo(){
+        //refazer o ├║ltimo comando?
+    }
+
+    public void rodaFolha(String data, String saida){
+        //n├úo fa├ºo ideia
+    }
+
+    public String totalFolha(String data){
+        //Sem ideia
+        return "";
+    }
+
+    public void undo(){
+        //desfazer o ├║ltimo comando?
     }
 }
