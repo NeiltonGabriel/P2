@@ -2,18 +2,18 @@ package br.ufal.ic.p2.wepayu.models;
 
 public class Assalariado extends Empregado{
 
-    private double liquido;
+    private String liquido;
 
-    public Assalariado(String nome, String endereco, String tipo, double salario, int id){
+    public Assalariado(String nome, String endereco, String tipo, String salario, String id){
         super(nome, endereco, tipo, salario, id);
-        setLiquido(salario);
+        this.liquido = salario;
     }
 
-    public double getLiquido() {
+    public String getLiquido() {
         return liquido;
     }
 
-    public void setLiquido(double liquido) {
+    public void setLiquido(String liquido) {
         this.liquido = liquido;
     }
 }
