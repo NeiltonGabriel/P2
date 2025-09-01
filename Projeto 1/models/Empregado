@@ -6,15 +6,16 @@ public class Empregado {
     private String nome;
     private String endereco;
     private String tipo;
-    private double salario;
-    private int id;
+    private String salario;
+    private String id;
+    private boolean sindicalizado;
 
-    public Empregado(String nome, String endereco, String tipo, double salario, int id){
-        setNome(nome);
-        setEndereco(endereco);
-        setTipo(tipo);
-        setSalario(salario);
-        setId(id);
+    public Empregado(String nome, String endereco, String tipo, String salario, String id){
+        this.nome = nome;
+        this.endereco = endereco;
+        this.tipo = tipo;
+        this.salario = salario;
+        this.id = id;
     }
 
     public String getNome() {
@@ -25,11 +26,12 @@ public class Empregado {
         this.nome = nome;
     }
 
-    public double getSalario() {
-        return salario;
+    public String getSalario() {
+        if (salario.contains(",")) return salario;
+        else return String.format("%d,00", Integer.parseInt(salario));
     }
 
-    public void setSalario(double salario) {
+    public void setSalario(String salario) {
         this.salario = salario;
     }
 
@@ -49,11 +51,18 @@ public class Empregado {
         this.endereco = endereco;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
+    }
+
+    public boolean isSindicalizado() {
+        return sindicalizado;
+    }
+    public void setSindicalizado(boolean sindicalizado) {
+        this.sindicalizado = sindicalizado;
     }
 }
