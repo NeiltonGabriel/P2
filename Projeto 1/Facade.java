@@ -11,6 +11,16 @@ import java.util.List;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 
+/*
+Fazer:
+
+Salvar e Limpar os dados das vendas
+
+mudar as coisas relacionadas aos empregados para a classe Empregado
+abrir, salvar, limpar, lista, acessado
+tem que ficar parecido com Horarios e Vendas
+*/
+
 public class Facade {
 
     private String arquivo = "dados.xml";
