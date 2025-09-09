@@ -1,20 +1,23 @@
 package br.ufal.ic.p2.wepayu.models;
 
+import br.ufal.ic.p2.wepayu.Exception.EmpregadoNaoExisteException;
+
 public class Horista extends Empregado{
 
-    private String liquido;
+    public Horista(){
 
-    public Horista(String nome, String endereco, String tipo, String salario, String id){
+    }
+
+    public Horista(String nome, String endereco, String tipo, String salario, String id) throws EmpregadoNaoExisteException {
         super(nome, endereco, tipo, salario, id);
-        this.liquido = salario;
     }
 
-    public String getLiquido() {
-        return liquido;
-    }
 
-    public void setLiquido(String liquido) {
-        this.liquido = liquido;
+
+    @Override
+    public String toString(){
+        return String.format(this.getId() + "\nNome: " + this.getNome() + "\nSal├írio: " + this.getSalario()
+                + "\nTipo: " + this.getTipo() + "\nEndere├ºo: " + this.getEndereco() + "\n");
     }
 
 }
