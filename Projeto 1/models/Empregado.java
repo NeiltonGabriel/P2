@@ -1,6 +1,6 @@
 package br.ufal.ic.p2.wepayu.models;
 
-import br.ufal.ic.p2.wepayu.Exception.EmpregadoNaoExisteException;
+import br.ufal.ic.p2.wepayu.Exception.*;
 
 public class Empregado {
     private String nome;
@@ -10,11 +10,29 @@ public class Empregado {
     private String id;
     private boolean sindicalizado;
 
-    public Empregado(String nome, String endereco, String tipo, String salario, String id){
+    public Empregado(){
+        //Necess├írio para o XML
+    }
+
+    public Empregado(String nome, String endereco, String tipo, String salario, String id) throws EmpregadoNaoExisteException{
+
+        if (nome.isEmpty()) throw new NomeNaoPodeSerNuloException();
+        if (endereco.isEmpty()) throw new EnderecoNaoPodeSerNuloException();
+        if (tipo.isEmpty()) throw new TipoNaoPodeSerNuloException();
+        if (salario.isEmpty()) throw new SalarioNaoPodeSerNuloException();
+
+        try{
+            double aux = Double.parseDouble(salario.replace(",", "."));
+            if (aux < 0) throw new SalarioDeveSerNaoNegativoException();
+
+        }catch(NumberFormatException e){
+            throw new SalarioDeveSerNumericoException();
+        }
+
         this.nome = nome;
         this.endereco = endereco;
         this.tipo = tipo;
-        this.salario = salario;
+        this.salario = salario.replace(".", ",");
         this.id = id;
     }
 
@@ -27,7 +45,8 @@ public class Empregado {
     }
 
     public String getSalario() {
-        if (salario.contains(",")) return salario;
+        if (salario == null) return "";
+        else if (salario.contains(",")) return salario;
         else return String.format("%d,00", Integer.parseInt(salario));
     }
 
@@ -62,7 +81,14 @@ public class Empregado {
     public boolean isSindicalizado() {
         return sindicalizado;
     }
+
     public void setSindicalizado(boolean sindicalizado) {
         this.sindicalizado = sindicalizado;
+    }
+
+    @Override
+    public String toString(){
+        return String.format(this.getId() + "\nNome: " + this.getNome() + "\nSal├írio: " + this.getSalario()
+                + "\nTipo: " + this.getTipo() + "\nEndere├ºo: " + this.getEndereco() + "\n");
     }
 }
