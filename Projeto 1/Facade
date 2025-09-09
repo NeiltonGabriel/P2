@@ -1,24 +1,36 @@
 package br.ufal.ic.p2.wepayu;
 
 import br.ufal.ic.p2.wepayu.Exception.*;
-import br.ufal.ic.p2.wepayu.models.Assalariado;
-import br.ufal.ic.p2.wepayu.models.Comissionado;
-import br.ufal.ic.p2.wepayu.models.Empregado;
-import br.ufal.ic.p2.wepayu.models.Horista;
+import br.ufal.ic.p2.wepayu.models.*;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
 
 public class Facade {
 
-    private List<Empregado> trabalhadores = new ArrayList<>();
+    private String arquivo = "dados.xml";
+    public static List<Empregado> trabalhadores = new ArrayList<>();
+    private boolean acessado = false;
 
     public void zerarSistema(){
+
         if (!trabalhadores.isEmpty()){
             trabalhadores.clear();
         }
+        //limpar o arquivo XML
+        try(FileOutputStream output = new FileOutputStream(arquivo);
+            XMLEncoder escritor = new XMLEncoder(output)){
+
+        }catch(IOException e){
+            System.err.println("Erro ao limpar o arquivo: " + e.getMessage());
+        }
+        Horarios.limpar();
+        Vendas.limpar();
     }
 
     public void alterarEmpregado(String nome, String tipo, String valor){
@@ -39,123 +51,49 @@ public class Facade {
         //fazer quando tipo = metodoPagamento e valor = banco
     }
 
-    public String criarEmpregado(String nome, String endereco, String tipo, String salario) throws NomeNaoPodeSerNulo{
-
-        if (nome.isEmpty()) throw new NomeNaoPodeSerNulo("Nome nao pode ser nulo.");
-        if (endereco.isEmpty()) throw new NomeNaoPodeSerNulo("Endereco nao pode ser nulo.");
-        if (tipo.isEmpty()) throw new NomeNaoPodeSerNulo("Tipo nao pode ser nulo.");
-        if (salario.isEmpty()) throw new NomeNaoPodeSerNulo("Salario nao pode ser nulo.");
-
-        String id = (!trabalhadores.isEmpty()) ? Integer.toString(Integer.parseInt(trabalhadores.getLast().getId()) + 1) : "1";
-
-        try{
-            double aux = Double.parseDouble(salario.replace(",", "."));
-            if (aux < 0) throw new NomeNaoPodeSerNulo("Salario deve ser nao-negativo.");
-
-        }catch(NumberFormatException e){
-            throw new NomeNaoPodeSerNulo("Salario deve ser numerico.");
-        }
-
-        if (tipo.equals("assalariado")){
-            Assalariado novo = new Assalariado(nome, endereco, tipo, salario, id);
-            trabalhadores.add(novo);
-        }else if (tipo.equals("horista")) {
-            Horista novo = new Horista(nome, endereco, tipo, salario, id);
-            trabalhadores.add(novo);
-        }else if (tipo.equals("comissionado")) throw new TipoNaoAplicavel("Tipo nao aplicavel.");
-        else throw new TipoNaoAplicavel("Tipo invalido.");
-
-        return id;
+    public String criarEmpregado(String nome, String endereco, String tipo, String salario) throws NomeNaoPodeSerNuloException {
+        Gerente.direcionar(nome, endereco, tipo, salario, getNextId());
+        return getLastId();
     }
 
-    public String criarEmpregado(String nome, String endereco, String tipo , String salario, String comissao){
+    public String criarEmpregado(String nome, String endereco, String tipo , String salario, String comissao) throws NomeNaoPodeSerNuloException{
 
-        if (nome.isEmpty()) throw new NomeNaoPodeSerNulo("Nome nao pode ser nulo.");
-        if (endereco.isEmpty()) throw new NomeNaoPodeSerNulo("Endereco nao pode ser nulo.");
-        if (tipo.isEmpty()) throw new NomeNaoPodeSerNulo("Tipo nao pode ser nulo.");
-        if (salario.isEmpty()) throw new NomeNaoPodeSerNulo("Salario nao pode ser nulo.");
-        if (comissao.isEmpty()) throw new NomeNaoPodeSerNulo("Comissao nao pode ser nula.");
-
-        try{
-            double aux = Double.parseDouble(salario.replace(",", "."));
-            if (aux < 0) throw new NomeNaoPodeSerNulo("Salario deve ser nao-negativo.");
-
-        }catch(NumberFormatException e){
-            throw new NomeNaoPodeSerNulo("Salario deve ser numerico.");
-        }
-
-        try{
-            double aux = Double.parseDouble(comissao.replace(",", "."));
-            if (aux < 0) throw new NomeNaoPodeSerNulo("Comissao deve ser nao-negativa.");
-        }catch (NumberFormatException e){
-            throw new NomeNaoPodeSerNulo("Comissao deve ser numerica.");
-        }
-
-        String id = (!trabalhadores.isEmpty()) ? Integer.toString(Integer.parseInt(trabalhadores.getLast().getId()) + 1) : "1";
-
-        if (!tipo.equals("comissionado")) throw new TipoNaoAplicavel("Tipo nao aplicavel.");
-
-        Comissionado novo = new Comissionado(nome, endereco, tipo, salario, id, comissao);
-
-        trabalhadores.add(novo);
-
-        return id;
+        Gerente.direcionar(nome, endereco, tipo, salario, getNextId(), comissao);
+        return getLastId();
     }
 
     public void encerrarSistema(){
         //Salvar no arquivo XML
+        try(FileOutputStream output = new FileOutputStream(arquivo);
+            XMLEncoder escritor = new XMLEncoder(output)){
+            escritor.writeObject(trabalhadores);
+
+        }catch(IOException e){
+            System.out.println("Erro ao abrir o arquivo:" + e.getMessage());
+        }
+        Horarios.salvar();
+        Vendas.salvar();
     }
 
     public String getAtributoEmpregado(String emp, String atributo) throws EmpregadoNaoExisteException{
-        //refatorar
-        //Salario = String?
-        if (emp.isEmpty()) throw new IdentificacaoDoEmpregadoNaoPodeSerNula("Identificacao do empregado nao pode ser nula.");
-        if (trabalhadores.isEmpty()) throw new EmpregadoNaoExisteException("Empregado nao existe.");
 
-        Empregado atual = trabalhadores.getFirst();
-
-        boolean achou = false;
-
-        for (Empregado aux : trabalhadores){
-            if (emp.equals(aux.getId())){
-                atual = aux;
-                achou = true;
-                break;
-            }
-        }
-
-        if (!achou) throw new EmpregadoNaoExisteException("Empregado nao existe.");
-
-        if (atributo.equals("nome")) return atual.getNome();
-        else if (atributo.equals("endereco")) return atual.getEndereco();
-        else if (atributo.equals("tipo")) return atual.getTipo();
-        else if (atributo.equals("salario")) return atual.getSalario();
-        else if (atributo.equals("sindicalizado")) return (atual.isSindicalizado()) ? "true" : "false";
-        else if (atributo.equals("comissao")){
-            Comissionado aux = (Comissionado) atual;
-            return aux.getComissao();
-        }
-        else throw new TipoNaoAplicavel("Atributo nao existe.");
+        if (!isAcessado()) abrir();
+        return Gerente.atributo(emp, atributo);
     }
 
-    public String getEmpregadoPorNome(String nome, int indice){
-        /*
-        procurar pelo nome o indice empregado, ou seja,
-        se indice = 2, ent├úo quero o segundo empregado como nome = String nome
-        e retorna o id dele
-        */
-        return "";
+    public String getEmpregadoPorNome(String nome, int indice) throws EmpregadoNaoExisteException{
+
+        if (!isAcessado()) abrir();
+        return Gerente.empregadoPorNome(nome, indice, trabalhadores);
 
     }
 
-    public String getHorasExtrasTrabalhadas(String emp, String dataInicial, String dataFinal){
-        //Ler a documenta├º├úo para fazer
-        return "";
+    public String getHorasExtrasTrabalhadas(String emp, String dataInicial, String dataFinal) throws EmpregadoNaoEhHoristaException{
+        return Horarios.HorasExtras(emp, dataInicial, dataFinal);
     }
 
-    public String getHorasTrabalhadas(String emp, String dataInicial, String dataFinal){
-        //Ler a documenta├º├úo fazer
-        return "";
+    public String getHorasNormaisTrabalhadas(String emp, String dataInicial, String dataFinal) throws EmpregadoNaoEhHoristaException{
+        return Horarios.horasNormais(emp, dataInicial, dataFinal);
     }
 
     public String getTaxasServico(String emp, String dataInicial, String dataFinal){
@@ -164,24 +102,26 @@ public class Facade {
     }
 
     public String getVendasRealizadas(String emp, String dataInicial, String dataFinal){
-        //Ler a documenta├º├úo para fazer
-        return "";
+        return Vendas.vendasFeitas(emp, dataInicial, dataFinal);
     }
 
-    public void lancaCartao(int emp, String data, String horas){
-        //emp ├® o id1
+    public void lancaCartao(String emp, String data, String horas) throws EmpregadoNaoEhHoristaException{
+        Horarios.lancaCartao(emp, data, horas);
     }
 
     public void lancataxaServico(String emp, String data, String valor){
         //n├úo sei o que ├® para fazer
     }
 
-    public void lancaVenda(String emp, String data, String valor){
-        //n├úo sei o que fazer
+    public void lancaVenda(String emp, String data, String valor) throws EmpregadoNaoEhComissionadoException{
+        Vendas.lancar(emp, data, valor);
     }
 
-    public void removerEmpregado(String emp){
+    public void removerEmpregado(String emp) throws EmpregadoNaoExisteException{
         //demitido
+        if (!isAcessado()) abrir();
+        Gerente.remover(emp);
+
     }
 
     public void redo(){
@@ -199,5 +139,38 @@ public class Facade {
 
     public void undo(){
         //desfazer o ├║ltimo comando?
+    }
+
+    public void abrir(){
+
+        try(FileInputStream input = new FileInputStream(arquivo);
+            XMLDecoder leitor = new XMLDecoder(input)){
+            trabalhadores = (List<Empregado>) leitor.readObject();
+            setAcessado(true);
+        }catch(IOException | IndexOutOfBoundsException e){
+            if (!(e instanceof  IndexOutOfBoundsException)){
+                System.out.println("Erro ao abrir o arquivo: " + ((IOException) e).getMessage());
+            }
+        }
+    }
+
+    public static void adicionarEmpregado(Empregado novo){
+        trabalhadores.add(novo);
+    }
+
+    public boolean isAcessado() {
+        return acessado;
+    }
+
+    public void setAcessado(boolean acessado) {
+        this.acessado = acessado;
+    }
+
+    public String getLastId(){
+        return (!trabalhadores.isEmpty()) ? trabalhadores.getLast().getId() : "0";
+    }
+
+    public String getNextId(){
+        return (!trabalhadores.isEmpty()) ? Integer.toString(Integer.parseInt(trabalhadores.getLast().getId()) + 1) : "1";
     }
 }
