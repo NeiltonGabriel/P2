@@ -1,0 +1,15 @@
+Fazer:
+
+terminar o caso teste 7
+
+concluir o cálculo do salário bruto do horista e fazer dos outros
+
+taxaSindical age sobre a quantidade de dias do mês
+
+totalFolha apenas calcular o valor bruto, pode retornar uma string com o total de cada, separado por espaço
+
+totalFolha calcula a partir do último dia de pagamento até a data passada como parâmetro
+
+rodarFolha utiliza totalFolha e atualiza a data de pagamento, precia por em ordem alfabética
+
+fazer o caso teste 8
