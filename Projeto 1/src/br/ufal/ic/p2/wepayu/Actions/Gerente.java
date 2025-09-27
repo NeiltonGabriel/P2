@@ -52,7 +52,7 @@ public class Gerente {
                 try {
                     Assalariado novo = new Assalariado(nome, endereco, tipo, salario, id);
                     adicionarEmpregado(novo);
-                }catch(EmpregadoNaoExisteException _){
+                }catch(EmpregadoNaoExisteException e){
 
                 }
             }
@@ -60,7 +60,7 @@ public class Gerente {
                 try{
                     Horista novo = new Horista(nome, endereco, tipo, salario, id);
                     adicionarEmpregado(novo);
-                }catch (EmpregadoNaoExisteException _){
+                }catch (EmpregadoNaoExisteException e){
 
                 }
             }
@@ -85,7 +85,7 @@ public class Gerente {
 
         }catch(EmpregadoNaoExisteException | NumberFormatException e){
             if (e instanceof EmpregadoNaoExisteException) System.out.println(e.getMessage());
-            else throw new NumberFormatException("Comissao deve ser numerica.");
+            else throw new ComissaoDeveSerNumericaException();
         }
     }
 
@@ -340,14 +340,21 @@ public class Gerente {
      * Metodo responsavel por pegar o id do ultimo empregado da lista de empregados
      */
     public static String getLastId(){
-        return (!trabalhadores.isEmpty()) ? trabalhadores.getLast().getId() : "0";
+        if (!trabalhadores.isEmpty()){
+            Empregado atual = trabalhadores.get(trabalhadores.size() - 1);
+            return atual.getId();
+        }
+        else return "0";
     }
-
     /**
      * Metodo responsavel por dizer qual o id do novo empregado
      */
     public static String getNextId(){
-        return (!trabalhadores.isEmpty()) ? Integer.toString(Integer.parseInt(trabalhadores.getLast().getId()) + 1) : "1";
+        if (!trabalhadores.isEmpty()){
+            String volta = Integer.toString(Integer.parseInt(Gerente.getLastId()) + 1);
+            return volta;
+        }
+        else return "1";
     }
 
     public static boolean isAcessado(){
@@ -402,3 +409,4 @@ public class Gerente {
         }
     }
 }
+
